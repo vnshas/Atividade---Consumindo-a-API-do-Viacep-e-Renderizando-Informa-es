@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { api } from "./services/api"
 
 
 function App() {
@@ -8,12 +9,16 @@ function App() {
   const [cep, setCep] = useState("")
 
   useEffect(() =>{
-    setLoading(true)
     const loadData = async () =>{
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
-      const json = response.json()
-      setAdress(json)
-      setLoading(false)
+      try{
+        setLoading(true)
+        const {data}= await api.get(`${cep}/json/`)
+        setAdress(data)
+      }catch (error) {
+        console.log(error)
+      } finally{
+        setLoading(false)
+      }
     }
 
     if(cep !== ""){
@@ -45,7 +50,7 @@ function App() {
                 {address.cep} - {address.logradouro} - {address.bairro} -{" "}
                 {address.localidade} -{address.uf}
               </p>
-              <button onClick={cleanAddress}></button>
+              <button onClick={cleanAddress}>Limpar CEP</button>
             </div>
           ) : (
             <div>
